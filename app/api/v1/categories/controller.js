@@ -1,63 +1,56 @@
-const Categories = require("./model");
+const { StatusCodes } = require("http-status-codes");
+const {
+  getAllCategories,
+  createCategories,
+  getOneCategories,
+  updateCategories,
+  deleteCategories,
+} = require("../../../services/mongoose/categories");
 
-const index = async (req, res) => {
+const index = async (req, res, next) => {
   try {
-    const result = await Categories.find();
-    res.status(200).json({ data: result });
+    const result = await getAllCategories();
+    res.status(StatusCodes.OK).json({ data: result });
   } catch (error) {
-    res.status(400).json({ error });
+    next(error);
   }
 };
 
-const find = async (req, res) => {
+const find = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const result = await Categories.findOne({ _id: id });
-
-    !result && res.status(404).json({ message: "Id categories is Not Found" });
-
-    res.status(200).json({ data: result });
+    const result = await getOneCategories(req);
+    res.status(StatusCodes.OK).json({ data: result });
   } catch (error) {
-    res.status(400).json({ error });
+    next(error);
   }
 };
 
-const create = async (req, res) => {
+const create = async (req, res, next) => {
   try {
-    const { name } = req.body;
-    const result = await Categories.create({ name });
-    res.status(201).json({ data: result });
+    const result = await createCategories(req);
+    res.status(StatusCodes.CREATED).json({ data: result });
   } catch (error) {
-    res.status(400).json({ error });
+    next(error);
   }
 };
 
-const update = async (req, res) => {
+const update = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { name } = req.body;
+    const result = await updateCategories(req);
 
-    const result = await Categories.findOneAndUpdate(
-      id,
-      { name },
-      { new: true, runValidators: true }
-    );
-
-    res.status(200).json({ data: result });
+    res.status(StatusCodes.OK).json({ data: result });
   } catch (error) {
-    res.status(400).json({ error });
+    next(error);
   }
 };
 
-const destroy = async (req, res) => {
+const destroy = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const result = await deleteCategories(req);
 
-    const result = await Categories.findOneAndRemove({ _id: id });
-
-    res.status(200).json({ data: result });
+    res.status(StatusCodes.OK).json({ data: result });
   } catch (error) {
-    res.status(400).json({ error });
+    next(error);
   }
 };
 
